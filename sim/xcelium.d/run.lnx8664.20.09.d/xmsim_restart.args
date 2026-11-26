@@ -1,0 +1,40 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-INPUT
+"@source /tools/cadence_march2021/XCELIUM2009/tools/methodology/UVM/CDNS-1.1d/additions/sv/files/tcl/uvm_sim.tcl"
++USB_SPEED=0
++incdir+../rtl
++incdir+../phy_agent
++incdir+../phy_bfm_agent
++incdir+../env
++incdir+../test
++incdir+../test_pkg
+-uvmhome
+/tools/cadence_march2021/XCELIUM2009/tools/methodology/UVM/CDNS-1.1d
+-sv_lib
+/tools/cadence_march2021/XCELIUM2009/tools/methodology/UVM/CDNS-1.1d/additions/sv/lib/64bit/libuvmpli.so
++UVM_TESTNAME=usb_phy_tx_data_pattern_test
+-MESSAGES
+-RUN
+-SV_LIB
+/tools/cadence_march2021/XCELIUM2009/tools/methodology/UVM/CDNS-1.1d/additions/sv/lib/64bit/libuvmdpi.so
++EMGRLOG
+tx_pattern_ls.log
+-XLSTIME
+1795698365
+-XLKEEP
+-XLMODE
+./xcelium.d/run.lnx8664.20.09.d
+-RUNMODE
+-CDSLIB
+./xcelium.d/run.lnx8664.20.09.d/cds.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.20.09.d/hdl.var
+-XLNAME
+xrun
+-XLVERSION
+"TOOL:	xrun(64)	20.09-s009"
+-XLNAME
+./xcelium.d/run.lnx8664.20.09.d/compute-srv3.eda.atme.in_38759
