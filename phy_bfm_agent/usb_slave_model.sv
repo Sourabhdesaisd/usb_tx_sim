@@ -102,8 +102,10 @@ class usb_tx_wire_checker extends uvm_component;
       symbols.push_back(symbol_level(level_j,pkt.speed));
     end
 
-    // Start a fresh bit-stuffing run at the first payload bit.
-    ones = 0;
+    // The final SYNC bit is a one. Consecutive-one counting continues
+    // across the SYNC-to-payload boundary, so the payload starts at count 1.
+    // For example, an FF byte causes a stuffed zero after its first five ones.
+    ones = 1;
 
     foreach (pkt.bytes[i]) begin
       for (int b=0; b<8; b++) begin
@@ -200,7 +202,7 @@ class usb_tx_wire_checker extends uvm_component;
     if (observed.size() >= eop_n)
       eop_symbols_checked += eop_n;
 
-    if (!decode_phy_bfm_bytes(pkt)) begin
+    if (!decode_serial_bytes(pkt)) begin
       packet_match = 1'b0;
       local_errors++;
     end
@@ -219,7 +221,7 @@ class usb_tx_wire_checker extends uvm_component;
     observed.delete();
   endfunction
 
-  function bit decode_phy_bfm_bytes(usb_tx_expected_packet pkt);
+  function bit decode_serial_bytes(usb_tx_expected_packet pkt);
     byte unsigned decoded[$];
     byte unsigned byte_value;
     phy_transaction tr;
@@ -237,9 +239,10 @@ class usb_tx_wire_checker extends uvm_component;
     end
 
     // The final SYNC symbol is K. Payload NRZI decoding starts from that
-    // physical state. USB bit stuffing starts with the payload, not SYNC.
+    // physical state. The final SYNC bit is a one and contributes to the
+    // consecutive-one run used by bit stuffing across the SYNC/data boundary.
     previous_j = (observed[sync_n-1] == symbol_level(1'b1,pkt.speed));
-    ones = 0;
+    ones = 1;
     bits_in_byte = 0;
     byte_value = '0;
 
@@ -289,7 +292,7 @@ class usb_tx_wire_checker extends uvm_component;
         `uvm_error("TX_DECODE",$sformatf(
           "Serial byte %0d actual=%02h expected=%02h",i,decoded[i],pkt.bytes[i]))
       end
-      tr = phy_transaction::type_id::create($sformatf("phy_bfm_tx_%0d",i));
+      tr = phy_transaction::type_id::create($sformatf("serial_tx_%0d",i));
       tr.speed = pkt.speed;
       tr.data = decoded[i];
       tr.valid = 1'b1;
@@ -520,7 +523,7 @@ class usb_slave_packet_seq extends uvm_sequence #(usb_bfm_transaction);
       req.speed = packet_speed;
       req.dp = p;
       req.dm = m;
-      req.analog_phy_bfm = (symbols[i] == SYM_J);
+      req.analog_serial = (symbols[i] == SYM_J);
       req.drive_enable = 1;
       req.duration_cycles = bit_clocks(packet_speed) +
                             ((i%2)==0 ? int'(jitter_cycles) : -int'(jitter_cycles));
@@ -548,7 +551,7 @@ class usb_slave_reset_seq extends uvm_sequence #(usb_bfm_transaction);
     start_item(req);
     req.speed = reset_speed;
     req.dp = 0; req.dm = 0;
-    req.analog_phy_bfm = 0;
+    req.analog_serial = 0;
     req.drive_enable = 1;
     req.duration_cycles = reset_cycles;
     req.idle_cycles = reset_speed == LS ? 640 : 80;
