@@ -2,7 +2,12 @@
 // File created by:  xrun
 // Do not modify this file
 //
-+USB_SPEED=0
++USB_SPEED=1
++USB_FAULT=1
++RESET_CASE=0
++UVM_VERBOSITY=UVM_MEDIUM
++TX_RANDOM_PACKETS=4
++USB_TX_RX_LOOPBACK=1
 +incdir+../rtl
 +incdir+../phy_agent
 +incdir+../phy_bfm_agent
@@ -13,7 +18,7 @@
 /tools/cadence_march2021/XCELIUM2009/tools/methodology/UVM/CDNS-1.1d/additions/sv/lib/64bit/libuvmpli.so:uvm_pli_boot
 -ACCESS
 +rwc
-+UVM_TESTNAME=usb_phy_tx_data_pattern_test
++UVM_TESTNAME=usb_phy_tx_random_test
 -MESSAGES
 top_tb
 -XLMODE

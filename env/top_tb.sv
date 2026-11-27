@@ -16,6 +16,8 @@ module top_tb;
 
   speed_t selected_usb_speed;
   int unsigned usb_speed_arg;
+  bit tx_rx_loopback_enable;
+  int unsigned loopback_arg;
 
   // --------------------------------------------------
   // UVM configuration objects
@@ -109,7 +111,9 @@ assign bus_if.phy_tx_valid = phy_if.tx_valid;
 assign phy_if.analog_d_plus  = bus_if.bus_dp;
 assign phy_if.analog_d_minus = bus_if.bus_dm;
 // Model the external analog receiver's local-TX squelch.
-assign phy_if.analog_enable = phy_if.analog_enable_req ;// && !phy_if.tx_valid;
+// Optional internal TX-to-RX loopback. When disabled, the analog RX path
+// follows the external BFM enable request without feeding back DUT TX.
+assign phy_if.analog_enable = phy_if.analog_enable_req && tx_rx_loopback_enable;
 
 
 // Common reset
@@ -179,11 +183,24 @@ assign bus_if.bit_tick = dut.dut_tx.bit_tick;
         1: selected_usb_speed = FS;
         2: selected_usb_speed = HS;
 
+        // USB_SPEED=3 selects one random speed for this simulation.
+        // The selected speed remains fixed for the complete run so that
+        // DUT, PHY driver, BFM, monitor and wire checker stay synchronized.
+        3: begin
+          case ($urandom_range(0,2))
+            0: selected_usb_speed = LS;
+            1: selected_usb_speed = FS;
+            2: selected_usb_speed = HS;
+          endcase
+          $display("[TB_TOP] Randomized USB speed selected: %s",
+                   selected_usb_speed.name());
+        end
+
         default: begin
 
           $fatal(
             1,
-            "[TB_TOP] Invalid USB_SPEED=%0d. Use 0=LS, 1=FS, 2=HS",
+            "[TB_TOP] Invalid USB_SPEED=%0d. Use 0=LS, 1=FS, 2=HS, 3=RANDOM",
             usb_speed_arg
           );
 
@@ -204,6 +221,13 @@ assign bus_if.bit_tick = dut.dut_tx.bit_tick;
     // ----------------------------------------------
     // Initialize DUT input signals
     // ----------------------------------------------
+
+    // Loopback is controlled independently from USB speed.
+    loopback_arg = 0;
+    if (!$value$plusargs("USB_TX_RX_LOOPBACK=%d", loopback_arg))
+      loopback_arg = 0;
+    tx_rx_loopback_enable = (loopback_arg != 0);
+    $display("[TB_TOP] TX-to-RX loopback enable = %0b", tx_rx_loopback_enable);
 
     phy_if.usb_speed     = selected_usb_speed;
 

@@ -78,6 +78,7 @@ package usb_phy_tb_pkg;
   `include "../test/usb_phy_base_test.sv"
   `include "../test/usb_phy_tx_test.sv"
   `include "../test/usb_phy_tx_corner_tests.sv"
+  `include "../test/usb_phy_tx_random_test.sv"
   `include "../test/usb_phy_slave_rx_test.sv"
   `include "../test/usb_phy_slave_turnaround_test.sv"
   `include "../test/usb_phy_full_path_test.sv"

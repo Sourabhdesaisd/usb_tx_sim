@@ -68,6 +68,8 @@
 /home/sgeuser8/Desktop/usb_tx_sim/test/usb_phy_tx_test.sv
 ../test/usb_phy_tx_corner_tests.sv
 /home/sgeuser8/Desktop/usb_tx_sim/test/usb_phy_tx_corner_tests.sv
+../test/usb_phy_tx_random_test.sv
+/home/sgeuser8/Desktop/usb_tx_sim/test/usb_phy_tx_random_test.sv
 ../test/usb_phy_slave_rx_test.sv
 /home/sgeuser8/Desktop/usb_tx_sim/test/usb_phy_slave_rx_test.sv
 ../test/usb_phy_slave_turnaround_test.sv

@@ -18,7 +18,10 @@ TEST        ?= usb_phy_full_path_test
 # 0 = Low Speed
 # 1 = Full Speed
 # 2 = High Speed
+# 3 = Randomly select LS/FS/HS once per simulation run
 USB_SPEED   ?= 1
+TX_RANDOM_PACKETS ?= 100
+USB_TX_RX_LOOPBACK ?= 1
 
 # Simulation control
 SEED        ?= 1
@@ -31,7 +34,7 @@ LOG_DIR     ?= logs
 WORK_DIR    ?= xcelium_work
 
 # Log file
-LOG_FILE    = $(LOG_DIR)/$(TEST)_speed$(USB_SPEED)_fault$(FAULT)_reset$(RESET_CASE)_seed$(SEED).log
+LOG_FILE    = $(LOG_DIR)/$(TEST)_speed$(USB_SPEED)_loopback$(USB_TX_RX_LOOPBACK)_fault$(FAULT)_reset$(RESET_CASE)_seed$(SEED).log
 
 # Xcelium options
 XRUN_FLAGS  = -64bit -uvm -sv -access +rwc
@@ -42,9 +45,11 @@ RUN_ARGS    = +UVM_TESTNAME=$(TEST) \
               +USB_FAULT=$(FAULT) \
               +RESET_CASE=$(RESET_CASE) \
               +UVM_VERBOSITY=$(UVM_VERBOSITY) \
+              +TX_RANDOM_PACKETS=$(TX_RANDOM_PACKETS) \
+              +USB_TX_RX_LOOPBACK=$(USB_TX_RX_LOOPBACK) \
               -seed $(SEED)
 
-.PHONY: all run compile ls fs hs regression clean help
+.PHONY: all run compile ls fs hs tx_random regression clean help
 
 # Default target
 all: run
@@ -124,6 +129,11 @@ fs:
 
 hs:
 	$(MAKE) run USB_SPEED=2
+
+# Randomized TX test. Speed is randomized independently for every packet.
+# Loopback defaults on for this TX-to-RX observation mode.
+tx_random:
+	$(MAKE) run TEST=usb_phy_tx_random_test USB_SPEED=1 USB_TX_RX_LOOPBACK=$(USB_TX_RX_LOOPBACK)
 
 #-----------------------------------------------------------
 # Basic regression: run the selected test at all speeds
@@ -269,12 +279,16 @@ help:
 	@echo "  make ls                  Run at Low Speed"
 	@echo "  make fs                  Run at Full Speed"
 	@echo "  make hs                  Run at High Speed"
+	@echo "  make tx_random           Run unified TX test with per-packet random speed"
+	@echo "  make tx_random TX_RANDOM_PACKETS=200 SEED=12345 USB_TX_RX_LOOPBACK=1"
 	@echo "  make regression          Run LS, FS and HS"
 	@echo "  make compile             Elaborate the design"
 	@echo "  make clean               Remove generated files"
 	@echo ""
 	@echo "Variables:"
 	@echo "  TEST=usb_phy_base_test"
-	@echo "  USB_SPEED=0|1|2"
+	@echo "  USB_SPEED=0|1|2 (initial speed; tx_random changes speed per packet)"
+	@echo "  USB_TX_RX_LOOPBACK=0|1 (1 enables DUT TX-to-RX feedback)"
+	@echo "  TX_RANDOM_PACKETS=100"
 	@echo "  SEED=1"
 	@echo "  UVM_VERBOSITY=UVM_MEDIUM"
