@@ -2,14 +2,4 @@
 // File created by:  xrun
 // Do not modify this file
 
-s1::(26Nov2026:18:56:26):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s2::(26Nov2026:19:13:18):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s3::(26Nov2026:19:16:34):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s4::(26Nov2026:19:17:49):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s5::(27Nov2026:09:59:48):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s6::(27Nov2026:10:05:18):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s7::(27Nov2026:10:05:37):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s8::(27Nov2026:10:05:59):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s9::(27Nov2026:10:06:35):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s10::(27Nov2026:10:08:17):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_data_pattern_test +USB_SPEED=0 -l tx_pattern_ls.log )
-s11::(27Nov2026:11:51:55):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_random_test +USB_SPEED=1 +USB_FAULT=1 +RESET_CASE=0 +UVM_VERBOSITY=UVM_MEDIUM +TX_RANDOM_PACKETS=4 +USB_TX_RX_LOOPBACK=1 -seed 12345 -l logs/usb_phy_tx_random_test_speed1_loopback1_fault1_reset0_seed12345.log )
+s1::(27Nov2026:11:53:54):( xrun -64bit -uvm -sv -access +rwc -f filelist.f -top top_tb +UVM_TESTNAME=usb_phy_tx_random_test +USB_SPEED=1 +USB_FAULT=1 +RESET_CASE=0 +UVM_VERBOSITY=UVM_MEDIUM +TX_RANDOM_PACKETS=4 +USB_TX_RX_LOOPBACK=1 -seed 12345 -l logs/usb_phy_tx_random_test_speed1_loopback1_fault1_reset0_seed12345.log )
