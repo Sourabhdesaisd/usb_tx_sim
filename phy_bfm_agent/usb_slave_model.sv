@@ -89,15 +89,21 @@ class usb_tx_wire_checker extends uvm_component;
     ones = 0;
     n_sync = sync_length(pkt.speed);
 
-    // USB SYNC: six zero bits followed by two one bits at LS/FS;
-    // the current project models the HS SYNC field as 32 serial bit cells.
+    // USB SYNC is transmitted as alternating K/J symbols and ends in K,K.
+    // Starting from idle J, the first n_sync-1 SYNC bits are zero (toggle);
+    // the final SYNC bit is one (hold K). This produces:
+    //   LS/FS: K J K J K J K K
+    //   HS:    15 repetitions of K J, followed by K K (32 bit cells).
+    // SYNC is not included in the payload bit-stuffing counter.
     for (int i=0; i<n_sync; i++) begin
-      data_bit = (i >= n_sync-2);
+      data_bit = (i == n_sync-1);
       if (!data_bit)
         level_j = !level_j;
       symbols.push_back(symbol_level(level_j,pkt.speed));
-      ones = data_bit ? ones+1 : 0;
     end
+
+    // Start a fresh bit-stuffing run at the first payload bit.
+    ones = 0;
 
     foreach (pkt.bytes[i]) begin
       for (int b=0; b<8; b++) begin
@@ -230,10 +236,10 @@ class usb_tx_wire_checker extends uvm_component;
       return 1'b0;
     end
 
-    // Decode starts from the final SYNC line state. The SYNC's trailing
-    // one bits establish the initial consecutive-one count for stuffing.
-    previous_j = observed[sync_n-1] == symbol_level(1'b1,pkt.speed);
-    ones = 2;
+    // The final SYNC symbol is K. Payload NRZI decoding starts from that
+    // physical state. USB bit stuffing starts with the payload, not SYNC.
+    previous_j = (observed[sync_n-1] == symbol_level(1'b1,pkt.speed));
+    ones = 0;
     bits_in_byte = 0;
     byte_value = '0;
 
@@ -472,8 +478,8 @@ class usb_slave_packet_seq extends uvm_sequence #(usb_bfm_transaction);
         "Peer->PHY packet id=%0d byte[%0d] sent=0x%02h",
         packet_id,i,payload[i]),UVM_LOW)
 
-    // FS/LS source SYNC is 8 symbols; HS source SYNC is 32 symbols.
-    // The last two symbols are K,K. The same bad-SYNC injection works at HS.
+    // USB SYNC is K,J,K,J,...,K,K: 8 symbols at LS/FS and 32 at HS.
+    // The final two symbols are K,K. The same bad-SYNC injection works at HS.
     for (int i = 0; i < (packet_speed == HS ? 31 : 7); i++)
       symbols.push_back((i % 2 == 0) ? SYM_K : SYM_J);
     symbols.push_back(break_sync ? SYM_J : SYM_K);

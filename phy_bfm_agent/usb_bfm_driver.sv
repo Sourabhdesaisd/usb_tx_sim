@@ -136,8 +136,8 @@ class usb_bfm_driver extends uvm_driver #(usb_bfm_transaction);
     // Disable analog input path during initialization
     phy_vif.analog_enable_req = 1'b0;
 
-    // Default phy_bfm input level
-    phy_vif.analog_phy_bfm = 1'b1;
+    // Default serial input level
+    phy_vif.analog_serial = 1'b1;
 
   endtask
 
@@ -282,7 +282,7 @@ class usb_bfm_driver extends uvm_driver #(usb_bfm_transaction);
     // Do not assume it is equivalent to DP or DM.
     // Its relationship to the external line signals
     // must follow the CDR architecture specification.
-    phy_vif.cb_bfm_drv.analog_phy_bfm <= tr.analog_phy_bfm;
+    phy_vif.cb_bfm_drv.analog_serial <= tr.analog_serial;
 
     // Check the resolved external pins midway through each bit/line segment.
     // This also works for HS, whose entire symbol lasts one system clock.
@@ -392,7 +392,7 @@ class usb_bfm_driver extends uvm_driver #(usb_bfm_transaction);
 
     bus_vif.cb_drv.device_oe <= 1'b0;
     // Passive termination restores J. Keep the CDR enabled between packets.
-    phy_vif.cb_bfm_drv.analog_phy_bfm <= 1'b1;
+    phy_vif.cb_bfm_drv.analog_serial <= 1'b1;
 
   endtask
 

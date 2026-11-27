@@ -43,7 +43,7 @@ preferences set toolbar-TimeSearch-WatchWindow {
 #
 database require wave -search {
 	./wave.shm/wave.trn
-	/home/sgeuser8/Desktop/usb_tx_sim/usb_uvm/usb_uvm-main/sim/wave.shm/wave.trn
+	/home/sgeuser8/Desktop/usb_tx_sim/sim/wave.shm/wave.trn
 }
 #
 # Groups
@@ -69,10 +69,15 @@ group insert \
     wave::top_tb.dut.dut_tx.sie_valid \
     wave::top_tb.dut.dut_tx.sof_packet \
     wave::top_tb.dut.dut_tx.usb_speed[1:0] \
-    wave::top_tb.dut.dut_tx.eop_line_state[1:0] \
+    wave::top_tb.dut.dut_tx.nrzi_bit \
+    wave::top_tb.dut.dut_tx.nrzi_last \
+    wave::top_tb.dut.dut_tx.nrzi_valid \
+    wave::top_tb.dut.dut_tx.stuffed_bit \
+    wave::top_tb.dut.dut_tx.stuff_ready \
+    wave::top_tb.dut.dut_tx.stuffed_last \
+    wave::top_tb.dut.dut_tx.stuffed_valid \
+    wave::top_tb.dut.dut_tx.u_piso.phy_bfm_out \
     wave::top_tb.dut.dut_tx.tx_line_state[1:0] \
-    wave::top_tb.dut.dut_tx.data_line_state[1:0] \
-    wave::top_tb.dut.dut_tx.data_line_valid \
     {### cdivider}
 group using TX_OUT
 group set -overlay 0
@@ -172,6 +177,58 @@ waveform baseline set -time 0
 
 
 set groupId0 [waveform add -groups TX_IN]
+set gpGlist0 [waveform hierarchy contents $groupId0]
+set gpID0 [lindex $gpGlist0 0]
+foreach {name attrs}  {
+    wave::top_tb.dut.dut_tx.clk {}
+    wave::top_tb.dut.dut_tx.rst_n {}
+    {wave::top_tb.dut.dut_tx.sie_data[7:0]} {}
+    wave::top_tb.dut.dut_tx.sie_eop {}
+    wave::top_tb.dut.dut_tx.sie_sop {}
+    wave::top_tb.dut.dut_tx.sie_valid {}
+    wave::top_tb.dut.dut_tx.sof_packet {}
+    {wave::top_tb.dut.dut_tx.usb_speed[1:0]} {}
+    wave::top_tb.dut.dut_tx.nrzi_bit {}
+    wave::top_tb.dut.dut_tx.nrzi_last {}
+    wave::top_tb.dut.dut_tx.nrzi_valid {}
+    wave::top_tb.dut.dut_tx.stuffed_bit {}
+    wave::top_tb.dut.dut_tx.stuff_ready {}
+    wave::top_tb.dut.dut_tx.stuffed_last {}
+    wave::top_tb.dut.dut_tx.stuffed_valid {}
+    wave::top_tb.dut.dut_tx.u_piso.phy_bfm_out {}
+    {wave::top_tb.dut.dut_tx.tx_line_state[1:0]} {-radix %b}
+    cdivider {}
+} childcmds {
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+    {}
+} {
+    set expected [ join [waveform signals -format fullpath $gpID0] ]
+    if {[string equal $name $expected] || $name == "cdivider"} {
+        if {$attrs != ""} {
+            eval waveform format $gpID0 $attrs
+        }
+        if { $childcmds != ""} {
+            eval $childcmds
+        }
+    }
+    set gpGlist0 [lrange $gpGlist0 1 end]
+    set gpID0 [lindex $gpGlist0 0]
+}
 
 
 set groupId0 [waveform add -groups TX_OUTPUT]
@@ -219,7 +276,7 @@ set id [waveform add -signals  {
 	wave::top_tb.dut.RxActive
 	} ]
 
-waveform xview limits 0 14592ns
+waveform xview limits 18170ns 25503ns
 
 #
 # Waveform Window Links

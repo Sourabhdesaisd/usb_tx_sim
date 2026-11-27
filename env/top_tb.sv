@@ -68,7 +68,7 @@ module top_tb;
     .analog_d_plus    (phy_if.analog_d_plus),
     .analog_d_minus   (phy_if.analog_d_minus),
     .analog_enable    (phy_if.analog_enable),
-    .analog_phy_bfm    (phy_if.analog_phy_bfm),
+    .analog_serial    (phy_if.analog_serial),
 
     // SIE transmit interface
     .sof_packet       (phy_if.sof_packet),
@@ -214,7 +214,7 @@ assign bus_if.bit_tick = dut.dut_tx.bit_tick;
     phy_if.sie_eop       = 1'b0;
 
     phy_if.analog_enable_req = 1'b0;
-    phy_if.analog_phy_bfm = 1'b1;
+    phy_if.analog_serial = 1'b1;
 
 
     // ----------------------------------------------
