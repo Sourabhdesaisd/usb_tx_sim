@@ -226,6 +226,7 @@ class phy_driver extends uvm_driver #(phy_transaction);
     // Keep it asserted until the complete pad packet, including EOP, ends.
     if (tr.eop) begin
       int unsigned timeout_cycles;
+      timeout_cycles = 0;
       while (vif.tx_valid !== 1'b1 && vif.rst_n === 1'b1 &&
              timeout_cycles++ < 1000000)
         @(vif.cb_drv);

@@ -32,7 +32,7 @@
 +EMGRLOG
 logs/usb_phy_tx_random_test_speed1_loopback1_fault1_reset0_seed12345.log
 -XLSTIME
-1795760633
+1795762236
 -XLKEEP
 -XLMODE
 ./xcelium.d/run.lnx8664.20.09.d

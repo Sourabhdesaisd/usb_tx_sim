@@ -34,3 +34,7 @@ make tx_random SEED=12345 TX_RANDOM_PACKETS=4 USB_TX_RX_LOOPBACK=1
 The run log prints each packet's selected speed and ends with LS/FS/HS packet counts plus TX wire-checker counters. For four packets, all three speeds are guaranteed to appear at least once because the speed selector is cyclic-random (`randc`).
 
 **Implementation scope note:** the supplied PHY's CDR/RX implementation does not support HS receive. HS packets are still driven and checked on the TX physical pins; enabling loopback at HS does not establish HS RX verification. LS/FS loopback RX behavior may be observed separately.
+
+### Per-packet randomized TX speed and HS source rate
+
+The `usb_phy_tx_random_test` selects LS, FS, and HS independently at packet boundaries. Payload bytes and inter-byte gaps are randomized with speed-aware constraints: LS/FS gaps are 0-20 system clocks; HS gaps are limited to 0-4 system clocks. The HS restriction prevents the SIE driver from feeding the 16-entry TX FIFO more slowly than the HS PISO consumes bytes, which would cause a packet underrun. Use `USB_TX_RX_LOOPBACK=1` to enable the configured internal TX-to-RX path.

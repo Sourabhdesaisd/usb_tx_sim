@@ -42,3 +42,7 @@ Replace the test name and speed for the other combinations. Speed encoding: 0=LS
 4. The driver waits for physical TX completion on the EOP transaction, so each packet sequence returns after the bus has been released. The test adds a short monitor drain interval before checking packet counts.
 5. The testbench does not claim HS RX support. These are TX-only tests and run at all three configured speeds.
 6. No Cadence Xcelium compile or simulation was available when this archive was assembled. Compile and run the directed tests in your project environment before using the results for sign-off.
+
+### Per-packet randomized TX speed and HS source rate
+
+The `usb_phy_tx_random_test` selects LS, FS, and HS independently at packet boundaries. Payload bytes and inter-byte gaps are randomized with speed-aware constraints: LS/FS gaps are 0-20 system clocks; HS gaps are limited to 0-4 system clocks. The HS restriction prevents the SIE driver from feeding the 16-entry TX FIFO more slowly than the HS PISO consumes bytes, which would cause a packet underrun. Use `USB_TX_RX_LOOPBACK=1` to enable the configured internal TX-to-RX path.

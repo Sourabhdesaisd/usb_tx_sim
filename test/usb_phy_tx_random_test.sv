@@ -9,16 +9,25 @@ class usb_phy_tx_rand_packet_cfg extends uvm_object;
   rand int unsigned inter_byte_gap;
   rand bit sof_packet;
 
+  // Fixed before randomization by the test. HS TX consumes one byte in
+  // approximately 8 system clocks, so its source gap must remain below that
+  // service rate. LS/FS have much longer byte times and can use a wider gap.
+  speed_t packet_speed;
+
   constraint c_payload_size {
     payload.size() inside {[1:64]};
   }
 
   constraint c_inter_byte_gap {
-    inter_byte_gap inside {[0:20]};
+    if (packet_speed == HS)
+      inter_byte_gap inside {[0:4]};
+    else
+      inter_byte_gap inside {[0:20]};
   }
 
   function new(string name="usb_phy_tx_rand_packet_cfg");
     super.new(name);
+    packet_speed = FS;
   endfunction
 endclass
 
@@ -137,6 +146,7 @@ class usb_phy_tx_random_test extends usb_phy_tx_directed_base_test;
 
       rand_cfg = usb_phy_tx_rand_packet_cfg::type_id::create(
                    $sformatf("rand_cfg_%0d", packets_sent));
+      rand_cfg.packet_speed = env_cfg.speed;
       if (!rand_cfg.randomize())
         `uvm_fatal("TX_RANDOM", "Random packet payload/gap randomization failed")
 
@@ -153,7 +163,7 @@ class usb_phy_tx_random_test extends usb_phy_tx_directed_base_test;
       endcase
 
       `uvm_info("TX_RANDOM_PACKET", $sformatf(
-        "Packet=%0d/%0d speed=%s length=%0d gap=%0d SOF=%0b loopback=%0b",
+        "Packet=%0d/%0d speed=%s length=%0d inter_byte_gap=%0d SOF=%0b loopback=%0b",
         packets_sent+1, num_packets, env_cfg.speed.name(), packet_bytes.size(),
         rand_cfg.inter_byte_gap, packet_sof, loopback_enabled), UVM_LOW)
 

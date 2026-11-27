@@ -150,8 +150,17 @@ class usb_tx_wire_checker extends uvm_component;
         underrun_packets_checked++;
       end
       else begin
-        `uvm_error("TX_WIRE","DUT drove a packet without accepted SIE SOP/EOP")
+        if (building != null) begin
+          `uvm_error("TX_WIRE",$sformatf(
+            "TX underrun: physical TX burst ended before SIE EOP was accepted; accepted_bytes=%0d speed=%s",
+            building.bytes.size(),building.speed.name()))
+        end
+        else begin
+          `uvm_error("TX_WIRE",
+            "DUT drove a packet without an accepted SIE SOP")
+        end
         observed.delete();
+        cycles_in_packet = 0;
         return;
       end
     end
